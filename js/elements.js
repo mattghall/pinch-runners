@@ -3,7 +3,8 @@ function addRowRunner(name) {
 }
 
 function addTitleCol(name) {
-  $("." + makeSafeName(name)).append('<div class="col-sm-2"' + makeSafeName(name) + '>' + name + '</div>');
+  $("." + makeSafeName(name)).append('<div class="col-2 d-sm-none"' + makeSafeName(name) + '></div>');
+  $("." + makeSafeName(name)).append('<div class="col-10 col-sm-2 text-center text-sm-left"' + makeSafeName(name) + '>' + name + '</div>');
 }
 
 var progressMiles = 0;
@@ -11,12 +12,14 @@ var progressMiles = 0;
 function addProgress(name, dist, elev) {
   var safeName = makeSafeName(name);
 
-  $("." + safeName).append('<div class="col-sm-5 ' + safeName + '-sm-dist">');
-  $("." + safeName + "-sm-dist").append('<div class="progress ' + safeName + '-pro-dist">');
+  $("." + safeName).append('<div class="col-2 d-sm-none"' + safeName + '>dist</div>');
+  $("." + safeName).append('<div class="col-10 col-sm-5 ' + safeName + '-sm-dist">');
+  $("." + safeName + "-sm-dist").append('<div class="progress ' + safeName + '-pro-dist mb-1 mb-sm-0">');
   $("." + safeName + "-pro-dist").append(buildSegment(dist, "green"));
 
-  $("." + safeName).append('<div class="col-sm-5 ' + safeName + '-sm-elev">');
-  $("." + safeName + "-sm-elev").append('<div class="progress ' + safeName + '-pro-elev">');
+  $("." + safeName).append('<div class="col-2 d-sm-none"' + safeName + '>elev</div>');
+  $("." + safeName).append('<div class="col-10 col-sm-5 ' + safeName + '-sm-elev">');
+  $("." + safeName + "-sm-elev").append('<div class="progress ' + safeName + '-pro-elev mb-1 mb-sm-0">');
   $("." + safeName + "-pro-elev").append(buildSegment(elev, "blue"));
   progressMiles = 0;
 }
@@ -60,10 +63,10 @@ function addUserRow(name, userDistance, userElevation) {
 
 function displayBarHeader() {
   addRowRunner("header");
-  $(".header").append('<div class="col-sm-2">');
-  $(".header").append('<div class="col-sm-5 header-dist">');
+  $(".header").append('<div class="d-none d-sm-block col-sm-2">');
+  $(".header").append('<div class="d-none d-sm-block col-sm-5 header-dist">');
   $(".header-dist").append('Distance');
-  $(".header").append('<div class="col-sm-5 header-elev">');
+  $(".header").append('<div class="d-none d-sm-block col-sm-5 header-elev">');
   $(".header-elev").append('Elevation');
 }
 
