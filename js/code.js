@@ -33,7 +33,7 @@ function getData() {
 
 function resetBars() {
   deleteBars();
-
+  displayBarHeader()
   for (runner of csv) {
       if(runner[0] != ""){
       displayRunner(runner);
@@ -45,8 +45,9 @@ function resetBars() {
 function displayRunner(runner) {
   var name = runner[0];
   var distance = runner[2];
+  var elevation = runner[3];
   console.log("printing: " + name);
-  addUserRow(name, distance);
+  addUserRow(name, distance, elevation);
 }
 
 

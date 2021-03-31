@@ -10,29 +10,21 @@ function addTitleCol(name) {
 
 var progressMiles = 0;
 
-function addProgress(name, green, yellow, blue) {
+function addProgress(name, dist, elev) {
   var safeName = name.replace(/\W/g, '');
 
-  // var gray = totalDistance - green - yellow - blue;
-  $("." + safeName).append('<div class="col-sm-10 ' + safeName + '-sm">');
-  $("." + safeName + "-sm").append('<div class="progress ' + safeName + '-pro">');
-  $("." + safeName + "-pro").append(buildSegment(green, "green"));
-  // $("." + name + "-pro").append(buildSegment(yellow, "yellow"));
-  // $("." + name + "-pro").append(buildSegment(blue, "blue"));
-  // $("." + name + "-pro").append(buildGraySegment(gray));
+  $("." + safeName).append('<div class="col-sm-5 ' + safeName + '-sm-dist">');
+  $("." + safeName + "-sm-dist").append('<div class="progress ' + safeName + '-pro-dist">');
+  $("." + safeName + "-pro-dist").append(buildSegment(dist, "green"));
+
+  $("." + safeName).append('<div class="col-sm-5 ' + safeName + '-sm-elev">');
+  $("." + safeName + "-sm-elev").append('<div class="progress ' + safeName + '-pro-elev">');
+  $("." + safeName + "-pro-elev").append(buildSegment(elev, "blue"));
   progressMiles = 0;
 }
 
 function buildSegment(miles, color) {
-  var comp = miles * 100;
-  // if(progressMiles >= totalDistance){
-  //   return;
-  // }
-  // progressMiles = progressMiles + m;
-  // var disp = roundMile(m);
-  // if(m >= totalDistance) {
-  //   disp = disp + "+";
-  // }
+  var comp = (miles * 100).toFixed(1);
   if (comp != 0) {
     return '<div class="progress-bar progress-bar-striped bar-' +
       color + '" style="width:' + comp + '%">' + comp + '%</div>';
@@ -40,23 +32,13 @@ function buildSegment(miles, color) {
 
 }
 
-// function buildGraySegment(miles) {
-//   var m = parseFloat(miles);
-//   if (m > 0) {
-//     return '<div class="progress-bar  bar-gray" style="width:' + milePercent(m) + '%">' + roundMile(m) + '</div>';
-//   }
-// }
+function buildNegativeSegment(miles, type) {
+  var comp = ((1-miles) * 100).toFixed(1);
 
-// function milePercent(mile) {
-//   return (mile / totalDistance * 100).toFixed();
-// }
-
-function roundMile(miles) {
-  if (miles <= 60) {
-    return miles.toFixed();
-  } else if (miles > 60) {
-    return miles.toFixed(1);
+  if (comp != 0) {
+    return '<div class="progress-bar progress-bar-striped bar-gray" style="width:' + comp + '%">' + type + '</div>';
   }
+
 }
 
 function setThroughSelector(dayOfYear, endOfMonth, endOfWeek) {
@@ -65,14 +47,19 @@ function setThroughSelector(dayOfYear, endOfMonth, endOfWeek) {
   $("#selectMonth").val(endOfMonth);
 }
 
-function addUserRow(name, userDistance) {
-  // var green = calcGreen(userDistance, expectedMiles);
-  // var yellow = calcYellow(userDistance, expectedMiles);
-  // var blue = calcBlue(userDistance, expectedMiles);
-
+function addUserRow(name, userDistance, userElevation) {
   addRowRunner(name);
   addTitleCol(name);
-  addProgress(name, userDistance, 0, 0);
+  addProgress(name, userDistance, userElevation);
+}
+
+function displayBarHeader() {
+  addRowRunner("header");
+  $(".header").append('<div class="col-sm-2">');
+  $(".header").append('<div class="col-sm-5 header-dist">');
+  $(".header-dist").append('Distance');
+  $(".header").append('<div class="col-sm-5 header-elev">');
+  $(".header-elev").append('Elevation');
 }
 
 function deleteBars() {
