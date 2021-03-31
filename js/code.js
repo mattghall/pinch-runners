@@ -1,5 +1,6 @@
 const url = "https://g2x40zbnhj.execute-api.us-west-2.amazonaws.com/pinch_runners_data";
 const finish = 121;
+var csv = [];
 
 $(function() {
   browserCheck();
@@ -9,7 +10,12 @@ $(function() {
 
 
 function postDataGather(data) {
-  console.log(data);
+  // console.log(data);
+  csv = parseCsv(data);
+  for(line of csv) {
+    console.log(line);
+  }
+  resetBars();
 }
 
 function getData() {
@@ -27,17 +33,18 @@ function getData() {
 
 function resetBars() {
   deleteBars();
-  calculateDistances();
 
-  for (let runner of distanceMap) {
-    displayRunner(runner);
+  for (runner of csv) {
+      if(runner[0] != ""){
+      displayRunner(runner);
+    }
   }
 }
 
 
 function displayRunner(runner) {
   var name = runner[0];
-  var distance = runner[1];
+  var distance = runner[2];
   console.log("printing: " + name);
   addUserRow(name, distance);
 }
@@ -58,4 +65,16 @@ function browserCheck() {
     browser = "Opera";
   }
   alert("We noticed you are using " + browser + " as your browser.\nUnfortunately TCX Editor has only been tested in Google Chrome. Certain features such as 'literally doing anything' may not work. Please consider reopening in Chrome or else you're on your own.");
+}
+
+
+function parseCsv(input) {
+    var record_num = 5;  // or however many elements there are in each row
+    var lines = input.split(/\r\n|\n/);
+    var csv = [];
+    for(line of lines) {
+      var row = line.split(',');
+      csv.push(row);
+    }
+    return csv;
 }
