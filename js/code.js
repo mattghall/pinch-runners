@@ -10,11 +10,7 @@ $(function() {
 
 
 function postDataGather(data) {
-  // console.log(data);
   csv = parseCsv(data);
-  for(line of csv) {
-    console.log(line);
-  }
   resetBars();
 }
 
@@ -46,7 +42,6 @@ function displayRunner(runner) {
   var name = runner[0];
   var distance = runner[2];
   var elevation = runner[3];
-  console.log("printing: " + name);
   addUserRow(name, distance, elevation);
 }
 

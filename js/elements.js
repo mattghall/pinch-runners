@@ -1,17 +1,15 @@
 function addRowRunner(name) {
-  var safeName = name.replace(/\W/g, '');
-  $(".bars").append('<div class="row runner ' + safeName + '">');
+  $(".bars").append('<div class="row runner ' + makeSafeName(name) + '">');
 }
 
 function addTitleCol(name) {
-  var safeName = name.replace(/\W/g, '');
-  $("." + safeName).append('<div class="col-sm-2"' + safeName + '>' + name + '</div>');
+  $("." + makeSafeName(name)).append('<div class="col-sm-2"' + makeSafeName(name) + '>' + name + '</div>');
 }
 
 var progressMiles = 0;
 
 function addProgress(name, dist, elev) {
-  var safeName = name.replace(/\W/g, '');
+  var safeName = makeSafeName(name);
 
   $("." + safeName).append('<div class="col-sm-5 ' + safeName + '-sm-dist">');
   $("." + safeName + "-sm-dist").append('<div class="progress ' + safeName + '-pro-dist">');
@@ -21,6 +19,10 @@ function addProgress(name, dist, elev) {
   $("." + safeName + "-sm-elev").append('<div class="progress ' + safeName + '-pro-elev">');
   $("." + safeName + "-pro-elev").append(buildSegment(elev, "blue"));
   progressMiles = 0;
+}
+
+function makeSafeName(name) {
+  return name.replace(/\W/g, '').toLowerCase();
 }
 
 function buildSegment(miles, color) {
@@ -48,6 +50,9 @@ function setThroughSelector(dayOfYear, endOfMonth, endOfWeek) {
 }
 
 function addUserRow(name, userDistance, userElevation) {
+  if(name == "team") {
+    $(".bars").append("<hr/>");
+  }
   addRowRunner(name);
   addTitleCol(name);
   addProgress(name, userDistance, userElevation);
