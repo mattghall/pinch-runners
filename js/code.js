@@ -1,5 +1,5 @@
 const url = "https://g2x40zbnhj.execute-api.us-west-2.amazonaws.com/pinch_runners_data";
-const headshots = ["crawford", "fraley", "gonzales", "haniger", "lewis", "moore", "paxton", "white"];
+const headshots = ["crawford", "fraley", "gonzales", "haniger", "lewis", "moore", "paxton", "white", "bishop", "graveman", "marmolejos", "seager", "vest", "dunn", "haggerty", "misiewicz", "sheffield", "fletcher", "kelenic", "murphy", "torrens", "flexen", "kikuchi", "rodriguez", "trammell", "france", "margevicius", "sadler", "travis"];
 const finish = 121;
 var csv = [];
 var ctx;
@@ -27,14 +27,18 @@ $(function() {
 
 function imgMe(src) {
   var img = new Image();
-  if (imageExists(src)) {
-    img.src = "img/icons/" + src + ".png";
-  } else {
-    img.src = "img/icons/smith.png";
+  if (!imageExists(src)) {
+    src = randomHeadshot();
   }
+  img.src = "img/icons/" + src + ".png";
   img.width = imgWidth;
   img.height = imgHeight;
   return img;
+}
+
+function randomHeadshot() {
+  var i = Math.floor(Math.random() * (headshots.length - 1));
+  return headshots[i];
 }
 
 function imageExists(name) {
@@ -96,8 +100,8 @@ function browserCheck() {
     browser = "Opera";
   }
   alert("We noticed you are using " + browser + " as your browser.\n" +
-  "Unfortunately Pinch Runners has only been tested in Google Chrome. " +
-  "Certain features such as 'literally doing anything' may not work. Continue at your own risk");
+    "Unfortunately Pinch Runners has only been tested in Google Chrome. " +
+    "Certain features such as 'literally doing anything' may not work. Continue at your own risk");
 }
 
 
@@ -220,6 +224,7 @@ function calcLegend() {
     }
   }
 }
+
 function toPercent(val) {
   return (val * 100).toFixed(0);
 }
