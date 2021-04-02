@@ -29,7 +29,7 @@ function makeSafeName(name) {
 }
 
 function buildSegment(miles, color) {
-  var comp = (miles * 100).toFixed(1);
+  var comp = miles.toFixed(1);
   if (comp != 0) {
     return '<div class="progress-bar progress-bar-striped bar-' +
       color + '" style="width:' + comp + '%">' + comp + '%</div>';
@@ -38,7 +38,7 @@ function buildSegment(miles, color) {
 }
 
 function buildNegativeSegment(miles, type) {
-  var comp = ((1-miles) * 100).toFixed(1);
+  var comp = (1-miles).toFixed(1);
 
   if (comp != 0) {
     return '<div class="progress-bar progress-bar-striped bar-gray" style="width:' + comp + '%">' + type + '</div>';

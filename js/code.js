@@ -1,7 +1,8 @@
-const url = "https://g2x40zbnhj.execute-api.us-west-2.amazonaws.com/pinch_runners_data";
-const headshots = ["crawford", "fraley", "gonzales", "haniger", "lewis", "moore", "paxton", "white", "bishop", "graveman", "marmolejos", "seager", "vest", "dunn", "haggerty", "misiewicz", "sheffield", "fletcher", "kelenic", "murphy", "torrens", "flexen", "kikuchi", "rodriguez", "trammell", "france", "margevicius", "sadler", "travis"];
+const url = "https://8kmzt1szjl.execute-api.us-west-2.amazonaws.com/pinch-runners-data-2";
+
+const headshots = ["crawford", "fraley", "gonzales", "haniger", "lewis", "moore", "paxton", "white", "bishop", "graveman", "marmolejos", "seager", "vest", "dunn", "haggerty", "misiewicz", "sheffield", "fletcher", "kelenic", "murphy", "torrens", "flexen", "kikuchi", "rodriguez", "trammell", "france", "margevicius", "sadler", "travis", "moose"];
 const finish = 121;
-var csv = [];
+var logData = {};
 var ctx;
 
 var imgHeight = 75;
@@ -46,42 +47,37 @@ function imageExists(name) {
 }
 
 function postDataGather(data) {
-  csv = parseCsv(data);
+  logData = JSON.parse(data);
   resetBars();
   loadChart();
 }
 
 function getData() {
-  // data = "Matt,Rainier,0.500,0.200,gonzales\nJoe,Rainier,0.200,0.100,paxton\nmegan,,0.0100, 0.000,lewis\nmegan,,0.9100, 0.000\nteam,,0.100, 0.200,haniger";
-  // postDataGather(data);
-  fetch(url)
-    .then(function(response) {
-      response.text().then(function(text) {
-        postDataGather(text);
-      });
-    })
-    .catch(function(err) {
-      console.log("Error: " + err);
-    });
+  data = '{"players":[{"name":"Matt","mountain":"Rainier","color":"blue","icon":"kelenic","target":{"distance":100,"elevation":14411},"progress":{"distance":10.3,"elevation":4.9},"distances":["10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3"],"elevations":["4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9","4.9"]},{"name":"Isaac","mountain":"Rainier","color":"","icon":"","target":{"distance":100,"elevation":14411},"progress":{"distance":0,"elevation":0},"distances":["0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0"],"elevations":["0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0"]},{"name":"Rachel","mountain":"Olympus","color":"green","icon":"lewis","target":{"distance":100,"elevation":7979},"progress":{"distance":0,"elevation":0},"distances":["0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0"],"elevations":["0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0"]},{"name":"Hillary","mountain":"Mailbox","color":"purple","icon":"haniger","target":{"distance":45,"elevation":4822},"progress":{"distance":0,"elevation":0},"distances":["0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0"],"elevations":["0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0"]},{"name":"Megan B","mountain":"Olympus","color":"yellow","icon":"gonzales","target":{"distance":100,"elevation":7979},"progress":{"distance":7,"elevation":1.7},"distances":["7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0","7.0"],"elevations":["1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7","1.7"]},{"name":"Sean","mountain":"Mailbox","color":"","icon":"seager","target":{"distance":45,"elevation":4822},"progress":{"distance":4.1,"elevation":1.5},"distances":["4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1"],"elevations":["1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5"]},{"name":"Jason (Bike)","mountain":"Shasta","color":"","icon":"","target":{"distance":600,"elevation":14179},"progress":{"distance":3.5,"elevation":7.9},"distances":["3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5","3.5"],"elevations":["7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9","7.9"]},{"name":"Megan C","mountain":"Mailbox","color":"red","icon":"trammell","target":{"distance":45,"elevation":4822},"progress":{"distance":5,"elevation":5.1},"distances":["5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0","5.0"],"elevations":["5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1","5.1"]}],"team":{"name":"team","target":{"distance":2270,"elevation":146850},"actuals":{"distance":"84.8","elevation":"4560"},"progress":{"distance":"3.7","elevation":"3.1"},"icon":"paxton"}}';
+    postDataGather(data);
+  // fetch(url)
+  //   .then(function(response) {
+  //     response.text().then(function(text) {
+  //       postDataGather(text);
+  //     });
+  //   })
+  //   .catch(function(err) {
+  //     console.log("Error: " + err);
+  //   });
 }
 
 
 function resetBars() {
   deleteBars();
   displayBarHeader()
-  for (runner of csv) {
-    if (runner[0] != "") {
-      displayRunner(runner);
-    }
+  for (runner of logData.players) {
+    displayRunner(runner);
   }
 }
 
 
 function displayRunner(runner) {
-  var name = runner[0];
-  var distance = runner[2];
-  var elevation = runner[3];
-  addUserRow(name, distance, elevation);
+  addUserRow(runner.name, runner.progress.distance, runner.progress.elevation);
 }
 
 
@@ -104,19 +100,6 @@ function browserCheck() {
     "Certain features such as 'literally doing anything' may not work. Continue at your own risk");
 }
 
-
-function parseCsv(input) {
-  var lines = input.split(/\r\n|\n/);
-  var csv = [];
-  for (line of lines) {
-    var row = line.split(',');
-    if (row[0] != "") {
-      csv.push(row);
-    }
-  }
-  return csv;
-}
-
 function validateColor(color) {
   if (color == "") {
     return randomColor();
@@ -130,19 +113,20 @@ function loadChart() {
     space = "";
   }
   var datasets = [];
-  for (row of csv) {
-    var runner = {
-      label: space + row[0],
+  for (runner of logData.players) {
+
+    var dataset = {
+      label: space + runner.name,
       data: [{
-        x: toPercent(row[2]),
-        y: toPercent(row[3])
+        x: runner.progress.distance,
+        y: runner.progress.elevation
       }],
-      backgroundColor: [validateColor(row[4])],
+      backgroundColor: runner.color,
       radius: 10,
       hoverRadius: 10,
-      pointStyle: imgMe(row[5])
+      pointStyle: imgMe(runner.icon)
     }
-    datasets.push(runner);
+    datasets.push(dataset);
   }
   ctx = document.getElementById('myChart').getContext('2d');
 
