@@ -1,5 +1,6 @@
 var imgHeight = 75;
 var imgWidth = 50;
+const LINE_CONST = "_line_";
 
 $(window).resize(function() {
   if (document.documentElement.clientWidth < 576) {
@@ -15,6 +16,58 @@ $(window).resize(function() {
 }).resize()
 
 
+function avatarDataset(runner, space) {
+  return {
+    label: space + runner.name,
+    data: [{
+      x: runner.progress.distance,
+      y: runner.progress.elevation
+    }],
+    backgroundColor: runner.color,
+    radius: 20,
+    hoverRadius: 20,
+    pointStyle: imgMe(runner.icon),
+    order: 1,
+  }
+}
+
+class Point {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+}
+
+function plotDataset(runner, space) {
+  var data = []
+  data.push(new Point(0, 0))
+  for (i = 0; i < dayOfChallenge; i++) {
+    data.push(new Point(runner.distances[i], runner.elevations[i]));
+  }
+  return {
+    label: LINE_CONST + runner.name,
+    data: data,
+    borderColor: runner.color,
+    pointBackgroundColor: "white",
+    radius: 2,
+    order: 10,
+    hoverRadius: 2,
+    spanGaps: true,
+    fill: false,
+    type: "line"
+  }
+}
+
+function findTTI(tti) {
+  if (Array.isArray(tti)) {
+    // line plot
+    return tti[0];
+  } else {
+    // scatter plot
+    return tti;
+  }
+}
+
 function loadChart() {
   var space = "     ";
   if (document.documentElement.clientWidth < 576) {
@@ -22,19 +75,8 @@ function loadChart() {
   }
   var datasets = [];
   for (runner of logData.players) {
-
-    var dataset = {
-      label: space + runner.name,
-      data: [{
-        x: runner.progress.distance,
-        y: runner.progress.elevation
-      }],
-      backgroundColor: runner.color,
-      radius: 10,
-      hoverRadius: 10,
-      pointStyle: imgMe(runner.icon)
-    }
-    datasets.push(dataset);
+    datasets.push(avatarDataset(runner, space));
+    datasets.push(plotDataset(runner, space))
   }
   ctx = document.getElementById('myChart').getContext('2d');
 
@@ -46,13 +88,72 @@ function loadChart() {
       datasets: datasets
     },
     options: {
+      tooltips: {
+        mode: "point",
+        callbacks: {
+          title: function(tooltipItem, data) {
+            try {
+              if (tooltipItem.length > 1) {
+                return (((tooltipItem[0].xLabel + tooltipItem[0].yLabel) / 2) || 0).toFixed() + "%";
+              } else {
+                var tti = findTTI(tooltipItem);
+                var dat = data.datasets[tti.datasetIndex];
+                if (dat.hasOwnProperty("label")) {
+                  var name = dat.label.trim();
+                  if (!name.startsWith(LINE_CONST)) {
+                    return name;
+                  }
+                }
+              }
+            } catch (e) {}
+          },
+          label: function(tooltipItem, data) {
+            try {
+              var tti = findTTI(tooltipItem);
+              var dat = data.datasets[tti.datasetIndex];
+              var name = dat.label.trim();
+              if (tooltipItem.length > 1) {
+                return " " + name;
+              }
+              if (!name.startsWith(LINE_CONST)) {
+                return toolTipMariner(name);
+              } else {
+                // return " " + ((tooltipItem.xLabel + tooltipItem.yLabel) / 2).toFixed() + "%";
+                return "April " + tooltipItem.index;
+              }
+            } catch (e) {
+              console.log(e);
+            }
+            return name;
+          },
+          afterBody: function(tooltipItem, data) {
+            try {
+              var msg = [];
+              var tti = findTTI(tooltipItem);
+              if (Array.isArray(tooltipItem) && tooltipItem.length == 1) {
+                var dat = data.datasets[tti.datasetIndex];
+                var name = dat.label.trim();
+                if (!name.startsWith(LINE_CONST)) {
+                  msg.push("");
+                  msg.push(toolTipDist(name));
+                  msg.push(toolTipElev(name));
+                }
+              }
+              return msg;
+
+            } catch (e) {
+              console.log(e);
+            }
+          },
+        }
+      },
       maintainAspectRatio: false,
       scales: {
         yAxes: [{
           ticks: {
-            max: 100,
+            max: roundNum(maxY + 7, 10),
             min: 0,
-            stepSize: 10
+            stepSize: roundNum(maxY / 10, 5)
           },
           scaleLabel: {
             display: true,
@@ -61,9 +162,9 @@ function loadChart() {
         }],
         xAxes: [{
           ticks: {
-            max: 100,
+            max: roundNum(maxX + 7, 10),
             min: 0,
-            stepSize: 10
+            stepSize: roundNum(maxX / 10, 5)
           },
           scaleLabel: {
             display: true,
@@ -72,9 +173,23 @@ function loadChart() {
         }],
       },
       legend: legend
-    }
+    },
+    plugins: [{
+      afterLayout: function(chart) {
+        chart.legend.legendItems.forEach(
+          (label) => {
+            label.text = label.text.replace(LINE_CONST, "");
+            return label;
+          }
+        )
+      }
+    }]
   });
 
+}
+
+function roundNum(x, to) {
+  return Math.ceil(x / to) * to;
 }
 
 function calcLegend() {
