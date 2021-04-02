@@ -43,12 +43,12 @@ function postDataGather(data) {
 
 function toolTipDist(name) {
   var player = logData.players[indexMap.get(name)];
-  return "Distance: " + player.progress.distance + " mi";
+  return "Distance: " + (player.progress.distance *  player.target.distance / 100).toFixed(1) + " mi";
 }
 
 function toolTipElev(name) {
   var player = logData.players[indexMap.get(name)];
-  return "Elevation: " + player.progress.elevation + " ft";
+  return "Elevation: " + (player.progress.elevation *  player.target.elevation / 100).toFixed() + " ft";
 }
 
 function toolTipMariner(name) {

@@ -68,6 +68,75 @@ function findTTI(tti) {
   }
 }
 
+function toolTipCallbacks() {
+  var multiple = false;
+  return {
+    beforeTitle: function(tooltipItem, data) {
+      multiple = false;
+    },
+    title: function(tooltipItem, data) {
+      try {
+        if (tooltipItem.length > 1) {
+          multiple = true;
+          return (((tooltipItem[0].xLabel + tooltipItem[0].yLabel) / 2) || 0).toFixed() + "%";
+        } else {
+          var tti = findTTI(tooltipItem);
+          var dat = data.datasets[tti.datasetIndex];
+          if (dat.hasOwnProperty("label")) {
+            var name = dat.label.trim();
+            if (!name.startsWith(LINE_CONST)) {
+              return name;
+            }
+          }
+        }
+      } catch (e) {}
+    },
+    label: function(tooltipItem, data) {
+      try {
+        var tti = findTTI(tooltipItem);
+        var dat = data.datasets[tti.datasetIndex];
+        var name = dat.label.trim();
+
+        if (name.startsWith(LINE_CONST)) {
+          if (multiple) {
+            return;
+          } else {
+            return " April " + tooltipItem.index;
+          }
+        } else {
+          if (multiple) {
+            return " " + name.replace(LINE_CONST, "");
+          } else {
+            return toolTipMariner(name);
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+      return name;
+    },
+    afterBody: function(tooltipItem, data) {
+      try {
+        var msg = [];
+        var tti = findTTI(tooltipItem);
+        if (Array.isArray(tooltipItem) && tooltipItem.length == 1) {
+          var dat = data.datasets[tti.datasetIndex];
+          var name = dat.label.trim();
+          if (!name.startsWith(LINE_CONST)) {
+            msg.push("");
+            msg.push(toolTipDist(name));
+            msg.push(toolTipElev(name));
+          }
+        }
+        return msg;
+
+      } catch (e) {
+        console.log(e);
+      }
+    },
+  };
+}
+
 function loadChart() {
   var space = "     ";
   if (document.documentElement.clientWidth < 576) {
@@ -90,62 +159,7 @@ function loadChart() {
     options: {
       tooltips: {
         mode: "point",
-        callbacks: {
-          title: function(tooltipItem, data) {
-            try {
-              if (tooltipItem.length > 1) {
-                return (((tooltipItem[0].xLabel + tooltipItem[0].yLabel) / 2) || 0).toFixed() + "%";
-              } else {
-                var tti = findTTI(tooltipItem);
-                var dat = data.datasets[tti.datasetIndex];
-                if (dat.hasOwnProperty("label")) {
-                  var name = dat.label.trim();
-                  if (!name.startsWith(LINE_CONST)) {
-                    return name;
-                  }
-                }
-              }
-            } catch (e) {}
-          },
-          label: function(tooltipItem, data) {
-            try {
-              var tti = findTTI(tooltipItem);
-              var dat = data.datasets[tti.datasetIndex];
-              var name = dat.label.trim();
-              if (tooltipItem.length > 1) {
-                return " " + name;
-              }
-              if (!name.startsWith(LINE_CONST)) {
-                return toolTipMariner(name);
-              } else {
-                // return " " + ((tooltipItem.xLabel + tooltipItem.yLabel) / 2).toFixed() + "%";
-                return "April " + tooltipItem.index;
-              }
-            } catch (e) {
-              console.log(e);
-            }
-            return name;
-          },
-          afterBody: function(tooltipItem, data) {
-            try {
-              var msg = [];
-              var tti = findTTI(tooltipItem);
-              if (Array.isArray(tooltipItem) && tooltipItem.length == 1) {
-                var dat = data.datasets[tti.datasetIndex];
-                var name = dat.label.trim();
-                if (!name.startsWith(LINE_CONST)) {
-                  msg.push("");
-                  msg.push(toolTipDist(name));
-                  msg.push(toolTipElev(name));
-                }
-              }
-              return msg;
-
-            } catch (e) {
-              console.log(e);
-            }
-          },
-        }
+        callbacks: toolTipCallbacks(),
       },
       maintainAspectRatio: false,
       scales: {
