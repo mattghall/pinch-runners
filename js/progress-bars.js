@@ -1,3 +1,7 @@
+function displayRunner(runner) {
+  addUserRow(runner.name, runner.progress.distance, runner.progress.elevation);
+}
+
 function addRowRunner(name) {
   $(".bars").append('<div class="row runner ' + makeSafeName(name) + '">');
 }
