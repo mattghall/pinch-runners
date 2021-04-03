@@ -1,4 +1,4 @@
-const url = "https://g2x40zbnhj.execute-api.us-west-2.amazonaws.com/pinch_runners_data";
+const url = "https://g2x40zbnhj.execute-api.us-west-2.amazonaws.com/pinch";
 const cookie = "pinch-runners.mattghall.com:browserCheck";
 var logData = {};
 var indexMap = new Map();
