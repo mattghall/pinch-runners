@@ -1,4 +1,4 @@
-const url = "https://8kmzt1szjl.execute-api.us-west-2.amazonaws.com/pinch-runners-data-2";
+const url = "https://g2x40zbnhj.execute-api.us-west-2.amazonaws.com/pinch_runners_data";
 const cookie = "pinch-runners.mattghall.com:browserCheck";
 var logData = {};
 var indexMap = new Map();
@@ -19,16 +19,16 @@ $(function() {
 function buildIndexMap(json) {
   for (i = 0; i < json.players.length; i++) {
     indexMap.set(json.players[i].name, i);
-    if(json.players[i].color == "") {
+    if (json.players[i].color == "") {
       json.players[i].color = randomColor();
     }
-    if(json.players[i].progress.distance > maxX) {
+    if (json.players[i].progress.distance > maxX) {
       maxX = json.players[i].progress.distance;
     }
-    if(json.players[i].progress.elevation > maxY) {
+    if (json.players[i].progress.elevation > maxY) {
       maxY = json.players[i].progress.elevation;
     }
-    if(json.players[i].icon == "" ) {
+    if (json.players[i].icon == "") {
       json.players[i].icon = randomHeadshot();
     }
   }
@@ -43,12 +43,12 @@ function postDataGather(data) {
 
 function toolTipDist(name) {
   var player = logData.players[indexMap.get(name)];
-  return "Distance: " + (player.progress.distance *  player.target.distance / 100).toFixed(1) + " mi";
+  return "Distance: " + (player.progress.distance * player.target.distance / 100).toFixed(1) + " mi";
 }
 
 function toolTipElev(name) {
   var player = logData.players[indexMap.get(name)];
-  return "Elevation: " + (player.progress.elevation *  player.target.elevation / 100).toFixed() + " ft";
+  return "Elevation: " + (player.progress.elevation * player.target.elevation / 100).toFixed() + " ft";
 }
 
 function toolTipMariner(name) {
@@ -78,6 +78,7 @@ function getData() {
     })
     .catch(function(err) {
       console.log("Error: " + err);
+      window.location.href = "error.html"
     });
 }
 
@@ -92,7 +93,7 @@ function resetBars() {
 
 function browserCheck() {
   var x = document.cookie;
-  if(localStorage.getItem(cookie) == "true"){
+  if (localStorage.getItem(cookie) == "true") {
     return;
   }
   if (navigator.userAgent.search("Chrome") >= 0) {
