@@ -19,10 +19,8 @@
   height: 40px;
 }
 
-body {
-  padding-top: 60px;
-  padding-left: 60px;
-  padding-right: 60px;
+.not-footer {
+  padding: 60px;
 }
 
 .runner {
@@ -31,7 +29,6 @@ body {
 
 .chart-row {
   margin-left: -15px;
-
 }
 
 @media only screen and (max-width: 600px) {
@@ -43,4 +40,16 @@ body {
 a.disabled {
   color: gray;
   pointer-events: none;
+}
+
+#version-updates {
+  display: none;
+}
+
+#version-updates h4 {
+  color: teal;
+}
+
+a span {
+  padding-left: 10px;
 }

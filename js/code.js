@@ -1,5 +1,7 @@
-const url = "https://g2x40zbnhj.execute-api.us-west-2.amazonaws.com/pinch";
-const cookie = "pinch-runners.mattghall.com:browserCheck";
+const url = "https://8kmzt1szjl.execute-api.us-west-2.amazonaws.com/pinch-runners-data-2";
+const BROWSER_CHECK_COOKIE = "pinch-runners.mattghall.com:browserCheck";
+const VERSION_COOKIE = "pinch-runners.mattghall:version";
+const VERSION = "v1.3";
 var logData = {};
 var indexMap = new Map();
 var maxX = 10;
@@ -7,6 +9,8 @@ var maxY = 10;
 var dayOfChallenge = 31;
 
 $(function() {
+  feather.replace();
+  $("#version-span").text(VERSION);
   browserCheck();
   getData(false);
 
@@ -96,8 +100,15 @@ function resetBars() {
 
 
 function browserCheck() {
-  var x = document.cookie;
-  if (localStorage.getItem(cookie) == "true") {
+  if (localStorage.getItem(VERSION_COOKIE) != VERSION) {
+    localStorage.setItem(VERSION_COOKIE, VERSION);
+    $("#version-updates").show();
+    return;
+  }
+
+
+  var x = document.BROWSER_CHECK_COOKIE;
+  if (localStorage.getItem(BROWSER_CHECK_COOKIE) == "true") {
     return;
   }
   if (navigator.userAgent.search("Chrome") >= 0) {
@@ -113,7 +124,7 @@ function browserCheck() {
   } else if (navigator.userAgent.search("Opera") >= 0) {
     browser = "Opera";
   }
-  localStorage.setItem(cookie, 'true');
+  localStorage.setItem(BROWSER_CHECK_COOKIE, 'true');
   alert("We noticed you are using " + browser + " as your browser.\n" +
     "Unfortunately Pinch Runners has only been tested in Google Chrome. " +
     "Certain features may not work. Continue at your own risk");
