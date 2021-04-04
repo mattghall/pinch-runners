@@ -39,3 +39,8 @@ body {
     margin-left: -40px !important;
   }
 }
+
+a.disabled {
+  color: gray;
+  pointer-events: none;
+}

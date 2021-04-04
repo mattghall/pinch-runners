@@ -1,17 +1,34 @@
 var imgHeight = 75;
 var imgWidth = 50;
 const LINE_CONST = "_line_";
+var sz = 0;
 
 $(window).resize(function() {
-  if (document.documentElement.clientWidth < 576) {
+  var old = sz;
+  var width = document.documentElement.clientWidth;
+  if (width < 400) {
     imgHeight = 30;
     imgWidth = 20;
-  } else if (document.documentElement.clientWidth < 900) {
+    sz = 0;
+  } else if (width < 576) {
+    imgHeight = 30;
+    imgWidth = 20;
+    sz = 1;
+  } else if (width < 900) {
     imgHeight = 50;
     imgWidth = 33;
+    sz = 2;
+  } else if (width < 1200) {
+    imgHeight = 75;
+    imgWidth = 50;
+    sz = 3;
   } else {
     imgHeight = 75;
     imgWidth = 50;
+    sz = 4;
+  }
+  if (old != sz) {
+    loadChart();
   }
 }).resize()
 
@@ -138,6 +155,10 @@ function toolTipCallbacks() {
 }
 
 function loadChart() {
+  if(typeof logData === 'undefined') {
+    console.log("Waiting for data");
+    return;
+  }
   var space = "     ";
   if (document.documentElement.clientWidth < 576) {
     space = "";

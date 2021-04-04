@@ -1,5 +1,7 @@
 const host = "docs.google.com";
 const url = "/spreadsheets/d/1tU3qY3sGw-D4hWGDx-eSQy2-Mn9rXPO55iXp9aITcwQ/export?format=csv&id=1tU3qY3sGw-D4hWGDx-eSQy2-Mn9rXPO55iXp9aITcwQ&gid=1282434482";
+const headerName = "force-update";
+const msInHour = 3600000;
 
 var team = {
   "target": {
@@ -13,8 +15,29 @@ var team = {
 }
 
 var https = require('https');
+var cache = "";
+var lastCache = new Date('1995-12-17T03:24:00');
 
 exports.handler = function(event, context, callback) {
+
+  console.log("headers: " + JSON.stringify(event.headers));
+  console.log("cache: " + (cache != ""));
+  console.log("lastCache: " + lastCache);
+
+  if (cache != "" && new Date() - lastCache < msInHour) {
+    console.log("In cache window")
+    if (event.hasOwnProperty("headers") && event.headers.hasOwnProperty(headerName) && event.headers[headerName] == "true") {
+      console.log("Force Update");
+    } else {
+      console.log("Returning cache from " + lastCache);
+      callback(null, buildResp(200, cache, true));
+      return;
+    }
+  } else {
+    console.log("Cache expired");
+  }
+
+
   console.log('start request to ' + url)
   var result = '';
   var options = {
@@ -62,7 +85,9 @@ exports.handler = function(event, context, callback) {
         response.on('end', function() {
           if (result != 'error') {
             console.log("success");
-            callback(null, buildResp(200, result));
+            cache = result;
+            lastCache = new Date();
+            callback(null, buildResp(200, result, false));
             return;
           } else {
             console.log("error");
@@ -164,7 +189,7 @@ function parseCsv(body) {
   };
 }
 
-function buildResp(code, body) {
+function buildResp(code, body, usingCache) {
   if (code == 200) {
     var json = parseCsv(body);
     json = JSON.stringify(json);
@@ -172,7 +197,9 @@ function buildResp(code, body) {
       statusCode: code,
       headers: {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET",
+        "Access-Control-Allow-Headers": "force-update",
+        "Using-Cache": usingCache + "",
       },
       body: json,
     };
@@ -182,7 +209,7 @@ function buildResp(code, body) {
       statusCode: code,
       headers: {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET",
       },
       body: JSON.stringify("{'error':'uh oh'}"),
     };
