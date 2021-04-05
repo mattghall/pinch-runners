@@ -1,7 +1,7 @@
-const url = "https://8kmzt1szjl.execute-api.us-west-2.amazonaws.com/pinch-runners-data-2";
+const url = "https://8kmzt1szjl.execute-api.us-west-2.amazonaws.com/pinch";
 const BROWSER_CHECK_COOKIE = "pinch-runners.mattghall.com:browserCheck";
 const VERSION_COOKIE = "pinch-runners.mattghall:version";
-const VERSION = "v1.3";
+const VERSION = "v1.4";
 var logData = {};
 var indexMap = new Map();
 var maxX = 10;
@@ -10,7 +10,7 @@ var dayOfChallenge = 31;
 
 $(function() {
   feather.replace();
-  $("#version-span").text(VERSION);
+  $(".version-span").text(VERSION);
   browserCheck();
   getData(false);
 
