@@ -155,22 +155,20 @@ function toolTipCallbacks() {
 }
 
 function loadChart() {
-  if(typeof logData === 'undefined') {
+  if (typeof logData === 'undefined') {
     console.log("Waiting for data");
     return;
   }
-  var space = "     ";
-  if (document.documentElement.clientWidth < 576) {
-    space = "";
-  }
+  var legend = calcLegend();
+  
   var datasets = [];
   for (runner of logData.players) {
-    datasets.push(avatarDataset(runner, space));
-    datasets.push(plotDataset(runner, space))
+    datasets.push(avatarDataset(runner));
+    datasets.push(plotDataset(runner));
+    (new LegendEntry(runner)).makeEntry();
   }
   ctx = document.getElementById('myChart').getContext('2d');
 
-  var legend = calcLegend();
 
   var scatterChart = new Chart(ctx, {
     type: 'scatter',
@@ -220,7 +218,6 @@ function loadChart() {
       }
     }]
   });
-
 }
 
 function roundNum(x, to) {
@@ -228,43 +225,11 @@ function roundNum(x, to) {
 }
 
 function calcLegend() {
-  if (document.documentElement.clientWidth < 576) {
-    return {
-      display: true,
-      position: 'bottom',
-      labels: {
-        fontColor: "#000080",
-        usePointStyle: true,
-        fontSize: 15,
-        boxWidth: 50,
-        padding: 20,
-      }
-    }
-  } else if (document.documentElement.clientWidth < 900) {
-    return {
-      display: true,
-      position: 'bottom',
-      labels: {
-        fontColor: "#000080",
-        usePointStyle: true,
-        fontSize: 15,
-        boxWidth: 50,
-        padding: 50,
-      }
-    }
-  } else {
-    return {
-      display: true,
-      position: 'right',
-      labels: {
-        fontColor: "#000080",
-        usePointStyle: true,
-        fontSize: 15,
-        boxWidth: 500,
-        padding: 60,
-      }
-    }
+  $(".legend").empty();
+  return {
+    display: false
   }
+
 }
 
 function imgMe(src) {
@@ -288,3 +253,20 @@ function imageExists(name) {
 }
 
 const headshots = ["crawford", "fraley", "gonzales", "haniger", "lewis", "moore", "paxton", "white", "bishop", "graveman", "marmolejos", "seager", "vest", "dunn", "haggerty", "misiewicz", "sheffield", "fletcher", "kelenic", "murphy", "torrens", "flexen", "kikuchi", "rodriguez", "trammell", "france", "margevicius", "sadler", "travis", "moose"];
+
+
+class LegendEntry {
+  constructor(runner) {
+    this.name = runner.name;
+    this.icon = runner.icon;
+    this.color = runner.color;
+  }
+
+  makeEntry() {
+    var entry = $('<div class="col-6 col-md-4 col-lg-12 legend-entry">')
+    entry.append('<img src="img/icons/' + this.icon + '.png" />');
+    entry.append('<div class="circle mx-2" style="background: ' + this.color + ';"></div>');
+    entry.append('<span>' + this.name + '</span>');
+    $(".row .legend").append(entry);
+  }
+}
