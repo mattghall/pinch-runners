@@ -8,11 +8,13 @@ function parseCsv(body) {
   for (var i = 1; i < lines.length - 2; i += 2) {
     var row1 = lines[i].split(',');
     var row2 = lines[i + 1].split(',');
-    if (row1[0] == ""||row1[1] == ""||row2[1] == "") {
+    if (row1[0] == "" || row1[1] == "" || row2[1] == "") {
       continue;
     }
     playerJsons.push(new Player(row1, row2))
   }
+
+  playerJsons.sort((a, b) => (b.progress.distance + b.progress.elevation) - (a.progress.distance + a.progress.elevation));
 
   var teamJson = {
     name: "team",
@@ -41,6 +43,7 @@ class Player {
   constructor(line1, line2) {
     var dist = parseFloat(line1[5]) || 0;
     var elev = parseFloat(line2[5]) || 0;
+    var playerTotal = parseFloat((dist+elev)/2).toFixed() || 0;
     var targetDist = parseFloat(line1[3]) || 100;
     var targetElev = parseFloat(line2[3]) || 10000;
     team.progress.dist += (dist * targetDist / 100);
@@ -60,6 +63,7 @@ class Player {
     this.progress = {
       distance: dist,
       elevation: elev,
+      total: playerTotal,
     }
     var dist = [];
     var totalDist = 0;

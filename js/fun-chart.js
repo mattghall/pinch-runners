@@ -2,6 +2,7 @@ var imgHeight = 75;
 var imgWidth = 50;
 const LINE_CONST = "_line_";
 var sz = 0;
+var scatterChart;
 
 $(window).resize(function() {
   var old = sz;
@@ -33,9 +34,9 @@ $(window).resize(function() {
 }).resize()
 
 
-function avatarDataset(runner, space) {
+function avatarDataset(runner) {
   return {
-    label: space + runner.name,
+    label: runner.name,
     data: [{
       x: runner.progress.distance,
       y: runner.progress.elevation
@@ -55,7 +56,7 @@ class Point {
   }
 }
 
-function plotDataset(runner, space) {
+function plotDataset(runner) {
   var data = []
   data.push(new Point(0, 0))
   for (i = 0; i < dayOfChallenge; i++) {
@@ -160,7 +161,7 @@ function loadChart() {
     return;
   }
   var legend = calcLegend();
-  
+
   var datasets = [];
   for (runner of logData.players) {
     datasets.push(avatarDataset(runner));
@@ -169,8 +170,7 @@ function loadChart() {
   }
   ctx = document.getElementById('myChart').getContext('2d');
 
-
-  var scatterChart = new Chart(ctx, {
+  scatterChart = new Chart(ctx, {
     type: 'scatter',
     data: {
       datasets: datasets
@@ -263,10 +263,39 @@ class LegendEntry {
   }
 
   makeEntry() {
-    var entry = $('<div class="col-6 col-md-4 col-lg-12 legend-entry">')
+    var entry = $('<div name="' + this.name + '" class="col-6 col-md-4 col-lg-12 legend-entry">')
     entry.append('<img src="img/icons/' + this.icon + '.png" />');
     entry.append('<div class="circle mx-2" style="background: ' + this.color + ';"></div>');
     entry.append('<span>' + this.name + '</span>');
     $(".row .legend").append(entry);
+    $(entry).click(function() {
+      hideDataSets(this);
+    });
+  }
+}
+
+function hideDataSets(cell) {
+  var name = $(cell).attr("name")
+  var hidden = true;
+  if ($(cell).hasClass("disabled")) {
+    console.log("Enabling " + name);
+    hidden = false;
+    $(cell).removeClass("disabled")
+  } else {
+    console.log("Hiding " + name);
+    $(cell).addClass("disabled")
+  }
+
+  scatterChart.data.datasets.forEach(function(dataset) {
+    if (dataset.label.includes(name)) {
+      dataset.hidden = hidden;
+    }
+  })
+  scatterChart.update();
+}
+
+function toggleAllDataSets() {
+  for(var child of $(".legend").children("div")) {
+    hideDataSets(child);
   }
 }
