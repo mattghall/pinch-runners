@@ -26,6 +26,12 @@ function addProgress(name, dist, elev) {
   $("." + safeName + "-sm-elev").append('<div class="progress ' + safeName + '-pro-elev mb-1 mb-sm-0">');
   $("." + safeName + "-pro-elev").append(buildSegment(elev, "blue"));
   progressMiles = 0;
+
+  var pie = $('<div class="col-4 col-md-0 d-block d-sm-none">');
+  pie.append('<div class="chart-container" style="position: relative;">');
+  pie.append('<canvas id="donut-' + safeName + '"></canvas>');
+  $("." + safeName).append(pie);
+  pieMe("donut-" + safeName, dist, elev);
 }
 
 function makeSafeName(name) {
@@ -42,7 +48,7 @@ function buildSegment(miles, color) {
 }
 
 function buildNegativeSegment(miles, type) {
-  var comp = (1-miles).toFixed(1);
+  var comp = (1 - miles).toFixed(1);
 
   if (comp != 0) {
     return '<div class="progress-bar progress-bar-striped bar-gray" style="width:' + comp + '%">' + type + '</div>';
@@ -57,7 +63,7 @@ function setThroughSelector(dayOfYear, endOfMonth, endOfWeek) {
 }
 
 function addUserRow(name, userDistance, userElevation) {
-  if(name == "team") {
+  if (name == "team") {
     $(".bars").append("<hr/>");
   }
   addRowRunner(name);
@@ -76,4 +82,36 @@ function displayBarHeader() {
 
 function deleteBars() {
   $(".bars").empty();
+}
+
+const pieColors = [
+  '#0c2c56',
+  '#005c5c',
+  '#c4ced4',
+];
+
+function pieMe(elementName, dist, elev) {
+  var ctx = document.getElementById(elementName).getContext("2d");
+  var config = {
+    type: 'doughnut',
+    data: {
+      labels: ["Distance", "Elevation", "ToDo"],
+      datasets: [{
+        data: [dist, 0, 100 - dist, ],
+        backgroundColor: pieColors,
+      }, {
+        data: [0, elev, 100 - elev],
+        backgroundColor: pieColors,
+      }, ]
+    },
+    options: {
+      responsive: true,
+      legend: {
+        display: false
+      }
+    },
+
+  };
+  new Chart(ctx, config);
+
 }

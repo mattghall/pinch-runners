@@ -33,14 +33,48 @@ $(window).resize(function() {
   }
 }).resize()
 
+const graphModes = {
+  PERCENT: "percent",
+  ACTUAL: "actual",
+  DISTANCE: "distance",
+  ELEVATION: "elevation"
+}
+
+var graphMode = graphModes.PERCENT;
+
+function avatarData(runner) {
+  switch (graphMode) {
+    case graphModes.PERCENT:
+      return [{
+        x: runner.progress.distance,
+        y: runner.progress.elevation
+      }];
+      break;
+    case graphModes.ACTUAL:
+      return [{
+        x: runner.actual.distance,
+        y: runner.actual.elevation
+      }];
+      break;
+    case graphModes.DISTANCE:
+      return [{
+        x: dayOfChallenge - 1,
+        y: runner.actual.distance
+      }];
+      break;
+    case graphModes.ELEVATION:
+      return [{
+        x: dayOfChallenge - 1,
+        y: runner.actual.elevation
+      }];
+      break;
+  }
+}
 
 function avatarDataset(runner) {
   return {
     label: runner.name,
-    data: [{
-      x: runner.progress.distance,
-      y: runner.progress.elevation
-    }],
+    data: avatarData(runner),
     backgroundColor: runner.color,
     radius: 20,
     hoverRadius: 20,
@@ -56,15 +90,38 @@ class Point {
   }
 }
 
-function plotDataset(runner) {
+function plotData(runner) {
   var data = []
   data.push(new Point(0, 0))
-  for (i = 0; i < dayOfChallenge; i++) {
-    data.push(new Point(runner.distances[i], runner.elevations[i]));
+  switch (graphMode) {
+    case graphModes.PERCENT:
+      for (i = 0; i < dayOfChallenge; i++) {
+        data.push(new Point(runner.distances[i], runner.elevations[i]));
+      }
+      break;
+    case graphModes.ACTUAL:
+      for (i = 0; i < dayOfChallenge; i++) {
+        data.push(new Point(runner.distances[i] * runner.target.distance / 100, runner.elevations[i] * runner.target.elevation / 100));
+      }
+      break;
+    case graphModes.DISTANCE:
+      for (i = 0; i < dayOfChallenge; i++) {
+        data.push(new Point(i, runner.distances[i] * runner.target.distance / 100));
+      }
+      break;
+    case graphModes.ELEVATION:
+      for (i = 0; i < dayOfChallenge; i++) {
+        data.push(new Point(i, runner.elevations[i] * runner.target.elevation / 100));
+      }
+      break;
   }
+  return data;
+}
+
+function plotDataset(runner) {
   return {
     label: LINE_CONST + runner.name,
-    data: data,
+    data: plotData(runner),
     borderColor: runner.color,
     pointBackgroundColor: "white",
     radius: 2,
@@ -155,6 +212,19 @@ function toolTipCallbacks() {
   };
 }
 
+function makeDatasets() {
+  var datasets = [];
+  for (runner of logData.players) {
+    if(graphMode != graphModes.PERCENT && runner.type != "RUN") {
+      continue;
+    }
+    datasets.push(avatarDataset(runner));
+    datasets.push(plotDataset(runner));
+    (new LegendEntry(runner)).makeEntry();
+  }
+  return datasets;
+}
+
 function loadChart() {
   if (typeof logData === 'undefined') {
     console.log("Waiting for data");
@@ -162,18 +232,13 @@ function loadChart() {
   }
   var legend = calcLegend();
 
-  var datasets = [];
-  for (runner of logData.players) {
-    datasets.push(avatarDataset(runner));
-    datasets.push(plotDataset(runner));
-    (new LegendEntry(runner)).makeEntry();
-  }
+
   ctx = document.getElementById('myChart').getContext('2d');
 
   scatterChart = new Chart(ctx, {
     type: 'scatter',
     data: {
-      datasets: datasets
+      datasets: makeDatasets()
     },
     options: {
       tooltips: {
@@ -181,43 +246,58 @@ function loadChart() {
         callbacks: toolTipCallbacks(),
       },
       maintainAspectRatio: false,
-      scales: {
-        yAxes: [{
-          ticks: {
-            max: roundNum(maxY + 7, 10),
-            min: 0,
-            stepSize: roundNum(maxY / 10, 5)
-          },
-          scaleLabel: {
-            display: true,
-            labelString: "Elevation %"
-          }
-        }],
-        xAxes: [{
-          ticks: {
-            max: roundNum(maxX + 7, 10),
-            min: 0,
-            stepSize: roundNum(maxX / 10, 5)
-          },
-          scaleLabel: {
-            display: true,
-            labelString: "Distance %"
-          }
-        }],
-      },
+      scales: makeScales(),
       legend: legend
-    },
-    plugins: [{
-      afterLayout: function(chart) {
-        chart.legend.legendItems.forEach(
-          (label) => {
-            label.text = label.text.replace(LINE_CONST, "");
-            return label;
-          }
-        )
-      }
-    }]
+    }
   });
+}
+
+function makeAxes(min, max, step, label) {
+  return [{
+    ticks: {
+      max: max,
+      min: min,
+      stepSize: step
+    },
+    scaleLabel: {
+      display: true,
+      labelString: label
+    }
+  }];
+}
+
+function makeScales() {
+  switch (graphMode) {
+    case graphModes.PERCENT:
+      return {
+        yAxes: makeAxes(0, roundNum(maxY + 7, 10), roundNum(maxY / 10, 5), "Elevation %"),
+          xAxes: makeAxes(0, roundNum(maxX + 7, 10), roundNum(maxX / 10, 5), "Distance %"),
+      }
+      break;
+    case graphModes.ACTUAL:
+      var furthest = logData.players.sort((a, b) => (b.actual.distance) - (a.actual.distance))[0].actual.distance;
+      var highest = logData.players.sort((a, b) => (b.actual.elevation) - (a.actual.elevation))[0].actual.elevation;
+      return {
+        yAxes: makeAxes(0, roundNum(highest + 7, 250), roundNum(highest / 10, 250), "Elevation ft"),
+          xAxes: makeAxes(0, roundNum(furthest + 7, 10), roundNum(furthest / 10, 5), "Distance mi"),
+      }
+      break;
+    case graphModes.DISTANCE:
+      var furthest = logData.players.sort((a, b) => (b.actual.distance) - (a.actual.distance))[0].actual.distance;
+      return {
+        yAxes: makeAxes(0, roundNum(furthest + 7, 10), roundNum(furthest / 10, 10), "Distance mi"),
+          xAxes: makeAxes(0, roundNum(dayOfChallenge, 5), 1, "Day of April '21"),
+      }
+      break;
+    case graphModes.ELEVATION:
+      var highest = logData.players.sort((a, b) => (b.actual.elevation) - (a.actual.elevation))[0].actual.elevation;
+      return {
+        yAxes: makeAxes(0, roundNum(highest + 7, 250), roundNum(highest / 10, 250), "Elevation ft"),
+          xAxes: makeAxes(0, roundNum(dayOfChallenge, 5), 1, "Day of April '21"),
+      }
+      break;
+  }
+
 }
 
 function roundNum(x, to) {
@@ -295,7 +375,7 @@ function hideDataSets(cell) {
 }
 
 function toggleAllDataSets() {
-  for(var child of $(".legend").children("div")) {
+  for (var child of $(".legend").children("div")) {
     hideDataSets(child);
   }
 }

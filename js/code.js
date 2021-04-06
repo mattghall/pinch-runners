@@ -1,7 +1,7 @@
 const url = "https://8kmzt1szjl.execute-api.us-west-2.amazonaws.com/pinch";
 const BROWSER_CHECK_COOKIE = "pinch-runners.mattghall.com:browserCheck";
 const VERSION_COOKIE = "pinch-runners.mattghall:version";
-const VERSION = "v1.4";
+const VERSION = "v1.5";
 var logData = {};
 var indexMap = new Map();
 var maxX = 10;
