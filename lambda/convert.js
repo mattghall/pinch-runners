@@ -23,8 +23,8 @@ function parseCsv(body) {
       elevation: team.target.elev,
     },
     actuals: {
-      distance: team.progress.dist.toFixed(1),
-      elevation: team.progress.elev.toFixed(),
+      distance: team.progress.dist,
+      elevation: team.progress.elev,
     },
     progress: {
       distance: (team.progress.dist / team.target.dist * 100).toFixed(1),
@@ -43,11 +43,16 @@ class Player {
   constructor(line1, line2) {
     var dist = parseFloat(line1[5]) || 0;
     var elev = parseFloat(line2[5]) || 0;
-    var playerTotal = parseFloat((dist+elev)/2).toFixed() || 0;
+    var playerTotal = parseFloat(((dist + elev) / 2).toFixed()) || 0;
+
     var targetDist = parseFloat(line1[3]) || 100;
     var targetElev = parseFloat(line2[3]) || 10000;
-    team.progress.dist += (dist * targetDist / 100);
-    team.progress.elev += (elev * targetElev / 100);
+
+    var distActual = parseFloat((dist * targetDist / 100).toFixed(1));
+    var elevActual = parseFloat((elev * targetElev / 100).toFixed(1));
+
+    team.progress.dist += distActual;
+    team.progress.elev += elevActual;
     team.target.dist += targetDist;
     team.target.elev += targetElev;
 
@@ -61,10 +66,14 @@ class Player {
       elevation: targetElev,
     };
     this.progress = {
-      distance: dist,
-      elevation: elev,
-      total: playerTotal,
-    }
+        distance: dist,
+        elevation: elev,
+        total: playerTotal,
+      },
+      this.actual = {
+        distance: distActual,
+        elevation: elevActual,
+      }
     var dist = [];
     var totalDist = 0;
     var elev = [];
