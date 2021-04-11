@@ -1,7 +1,7 @@
 const url = "https://8kmzt1szjl.execute-api.us-west-2.amazonaws.com/pinch";
 const BROWSER_CHECK_COOKIE = "pinch-runners.mattghall.com:browserCheck";
 const VERSION_COOKIE = "pinch-runners.mattghall:version";
-const VERSION = "v1.4";
+const VERSION = "v1.4.1";
 var logData = {};
 var indexMap = new Map();
 var maxX = 10;
@@ -43,8 +43,21 @@ function postDataGather(data) {
   buildIndexMap(logData);
   resetBars();
   loadChart();
-  $('.chart-row').show();
-  $('#refresh-button').removeClass('disabled');
+  loading(false);
+}
+
+function loading(bool) {
+  if(bool || bool == "true") {
+    $('.chart-row').hide();
+    $('#spinner').show();
+    $('#notSpinner').hide();
+    $('#refresh-button').addClass('disabled');
+  } else {
+    $('.chart-row').show();
+    $('#spinner').hide();
+    $('#notSpinner').show();
+    $('#refresh-button').removeClass('disabled');
+  }
 }
 
 function toolTipDist(name) {
@@ -65,8 +78,7 @@ function toolTipMariner(name) {
 }
 
 function getData(forceUpdate) {
-  $('#refresh-button').addClass('disabled');
-  $('.chart-row').hide()
+  loading(true);
   console.log("Getting Data with forceUpdate=" + forceUpdate);
   // data = '{"players":[{"name":"Matt","mountain":"Rainier","color":"teal","icon":"kelenic","target":{"distance":100,"elevation":14411},"progress":{"distance":32.7,"elevation":19},"distances":["10.3","14.5","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7","32.7"],"elevations":["4.9","7.1","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0","19.0"]},{"name":"Isaac","mountain":"Rainier","color":"","icon":"","target":{"distance":100,"elevation":14411},"progress":{"distance":0,"elevation":0},"distances":["0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0"],"elevations":["0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0"]},{"name":"Rachel","mountain":"Olympus","color":"green","icon":"lewis","target":{"distance":100,"elevation":7979},"progress":{"distance":6.2,"elevation":5.3},"distances":["0.0","0.0","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2","6.2"],"elevations":["0.0","0.0","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3","5.3"]},{"name":"Hillary","mountain":"Mailbox","color":"purple","icon":"haniger","target":{"distance":45,"elevation":4822},"progress":{"distance":6.4,"elevation":1.9},"distances":["0.0","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4","6.4"],"elevations":["0.0","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9","1.9"]},{"name":"Megan B","mountain":"Olympus","color":"yellow","icon":"moose","target":{"distance":100,"elevation":7979},"progress":{"distance":11.9,"elevation":5.9},"distances":["7.0","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9","11.9"],"elevations":["1.7","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9","5.9"]},{"name":"Sean","mountain":"Mailbox","color":"Pick a color sean!","icon":"seager","target":{"distance":45,"elevation":4822},"progress":{"distance":4.1,"elevation":1.5},"distances":["4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1","4.1"],"elevations":["1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5","1.5"]},{"name":"Jason (Bike)","mountain":"Shasta","color":"magenta","icon":"marmolejos","target":{"distance":600,"elevation":14179},"progress":{"distance":10.3,"elevation":15.4},"distances":["3.5","8.0","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3","10.3"],"elevations":["7.9","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4","15.4"]},{"name":"Megan C","mountain":"Mailbox","color":"red","icon":"trammell","target":{"distance":45,"elevation":4822},"progress":{"distance":18,"elevation":8.6},"distances":["5.0","14.2","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0","18.0"],"elevations":["5.1","6.4","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6","8.6"]}],"team":{"name":"team","target":{"distance":1135,"elevation":73425},"actuals":{"distance":"125.4","elevation":"6394"},"progress":{"distance":"11.1","elevation":"8.7"},"icon":"paxton"}}';
   // postDataGather(data);
@@ -100,12 +112,10 @@ function resetBars() {
 
 
 function browserCheck() {
-  if (localStorage.getItem(VERSION_COOKIE) != VERSION) {
+  if (localStorage.getItem(VERSION_COOKIE) != VERSION && localStorage.getItem(VERSION_COOKIE).substr(0,4) != VERSION.substr(0,4)) {
     localStorage.setItem(VERSION_COOKIE, VERSION);
     $("#version-updates").show();
-    return;
   }
-
 
   var x = document.BROWSER_CHECK_COOKIE;
   if (localStorage.getItem(BROWSER_CHECK_COOKIE) == "true") {
