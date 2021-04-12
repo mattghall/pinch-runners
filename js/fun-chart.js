@@ -429,6 +429,9 @@ class LegendEntry {
   }
 
   displayName() {
+    if(this.type == "RUN") {
+      return this.name;
+    }
     return this.name + " (" + this.type + ")";
   }
 
