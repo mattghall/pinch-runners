@@ -26,19 +26,28 @@
         <img class="rounded mx-auto d-block" alt="Evergreen Challenge" src="img/rainier.png">
       </div>
       <div class="col-md-7">
-        <h2>April Challenge</h2>
-        <p>Pinch Runners Progress</p>
-        <a href="https://docs.google.com/spreadsheets/d/1tU3qY3sGw-D4hWGDx-eSQy2-Mn9rXPO55iXp9aITcwQ/edit?usp=sharing"><i data-feather="edit"></i><span>Enter Data</span></a>
-        <br /><br />
-        <a id="refresh-button" href="#" class="disabled" onclick="getData(true);"><i data-feather="refresh-cw"></i><span>Refresh Data</span></a>
-        <div id="version-updates">
-          <hr>
-          <h4>NEW FEATURE ALERT!</h4>
-          <p>Downloading data from google sheets is slow so now all data is cached for 1 hour by default.
-            If you're not seeing your recent changes, you can click the 'Refresh Data' button above to force an update.
-            I also adding a loading gif so you know something's going on.
-            Happy Running!
-          </p>
+        <div class="row" style="height: 100%;">
+          <div class="col-12 text-center text-md-left">
+            <h2>April Challenge</h2>
+          </div>
+          <div class="col-12 text-center text-md-left">
+            <p>Pick your mountain and track your progress throughout the month!</p>
+          </div>
+          <div class="col-6 col-md-12 text-center text-md-left">
+            <a href="https://docs.google.com/spreadsheets/d/1tU3qY3sGw-D4hWGDx-eSQy2-Mn9rXPO55iXp9aITcwQ/edit?usp=sharing"><i data-feather="edit"></i><span>Enter Data</span></a>
+          </div>
+          <div class="col-6 col-md-12 text-center text-md-left">
+            <a id="refresh-button" href="#" class="disabled" onclick="getData(true);"><i data-feather="refresh-cw"></i><span>Refresh Data</span></a>
+          </div>
+          <div class="col-12">
+            <div id="version-updates">
+              <hr>
+              <h4>NEW FEATURE ALERT!</h4>
+              <p>The graph now has multple axis to choose from! Try them all to find your favorite.
+                Happy Running!
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -46,21 +55,41 @@
 
     <div id="spinner" class="text-center">
       <div class="spinner-grow text-info" role="status" style="height: 15rem; width: 15rem;">
-      <span class="d-none">Loading...</span>
-    </div>
+        <span class="d-none">Loading...</span>
+      </div>
     </div>
 
     <div id="notSpinner">
-      <h2 style="text-align: center">Climb your Mountain!</h2>
+      <div class="row">
+        <div class="col-12">
+          <h3>Climb your Mountain!</h3>
+        </div>
+      </div>
 
       <div class="row">
         <div class="col-12 col-lg-9 px-0 px-sm-5">
           <div class="chart-container" style="position: relative; height:80vh;">
             <canvas id="myChart" width="100" height="100"></canvas>
           </div>
+          <div class="col-12">
+            <div id="axis" class="btn-group" role="group" aria-label="Axis" style="width: 100%">
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                </button>
+                <div class="dropdown-menu ">
+                  <a class="dropdown-item type-dropdown" href="#">Percent</a>
+                  <a class="dropdown-item type-dropdown" href="#">Actual</a>
+                </div>
+              </div>
+
+              <button type="button" class="btn val selected">Total</button>
+              <button type="button" class="btn val">Distance</button>
+              <button type="button" class="btn val">Elevation</button>
+            </div>
+          </div>
         </div>
         <div class="col-12 col-lg-3">
-          <div class="row legend">
+          <div class="row legend" style="height: 90%;">
           </div>
         </div>
         <div class="container bars my-3"> </div>

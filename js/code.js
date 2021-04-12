@@ -3,7 +3,7 @@ const BROWSER_CHECK_COOKIE = "pinch-runners.mattghall.com:browserCheck";
 const VERSION_COOKIE = "pinch-runners.mattghall:version";
 const VERSION = "v1.5";
 var logData = {};
-var indexMap = new Map();
+var playerMap = new Map();
 var maxX = 10;
 var maxY = 10;
 var dayOfChallenge = 31;
@@ -18,11 +18,11 @@ $(function() {
   if (date < Date.parse('1 May 2021 00:00:00 GMT')) {
     dayOfChallenge = date.getDate();
   }
-});
+}); // end startup
 
-function buildIndexMap(json) {
+function buildplayerMap(json) {
   for (i = 0; i < json.players.length; i++) {
-    indexMap.set(json.players[i].name, i);
+    playerMap.set(json.players[i].name, json.players[i]);
     if (json.players[i].color == "") {
       json.players[i].color = randomColor();
     }
@@ -40,14 +40,14 @@ function buildIndexMap(json) {
 
 function postDataGather(data) {
   logData = JSON.parse(data);
-  buildIndexMap(logData);
+  buildplayerMap(logData);
   resetBars();
   loadChart();
   loading(false);
 }
 
 function loading(bool) {
-  if(bool || bool == "true") {
+  if (bool || bool == "true") {
     $('.chart-row').hide();
     $('#spinner').show();
     $('#notSpinner').hide();
@@ -61,17 +61,17 @@ function loading(bool) {
 }
 
 function toolTipDist(name) {
-  var player = logData.players[indexMap.get(name)];
+  var player = playerMap.get(name);
   return "Distance: " + (player.progress.distance * player.target.distance / 100).toFixed(1) + " mi";
 }
 
 function toolTipElev(name) {
-  var player = logData.players[indexMap.get(name)];
+  var player = playerMap.get(name);
   return "Elevation: " + (player.progress.elevation * player.target.elevation / 100).toFixed() + " ft";
 }
 
 function toolTipMariner(name) {
-  var player = logData.players[indexMap.get(name)];
+  var player = playerMap.get(name);
   var mariner = player.icon;
   mariner = mariner.charAt(0).toUpperCase() + mariner.slice(1);
   return " " + mariner;
@@ -112,7 +112,7 @@ function resetBars() {
 
 
 function browserCheck() {
-  if (localStorage.getItem(VERSION_COOKIE) != VERSION && localStorage.getItem(VERSION_COOKIE).substr(0,4) != VERSION.substr(0,4)) {
+  if (localStorage.getItem(VERSION_COOKIE) != VERSION && localStorage.getItem(VERSION_COOKIE).substr(0, 4) != VERSION.substr(0, 4)) {
     localStorage.setItem(VERSION_COOKIE, VERSION);
     $("#version-updates").show();
   }

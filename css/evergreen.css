@@ -84,5 +84,36 @@ a span {
 
 .legend-entry.disabled img {
   opacity: 0.4;
-  filter: alpha(opacity=40); /* msie */
+  filter: alpha(opacity=40);
+  /* msie */
+}
+
+/* Axis Buttons */
+#axis button {
+  background-color: #005C5C;
+  color: #fff;
+  border-color: #10707f;
+  -webkit-transition: background-color 250ms linear;
+  -ms-transition: background-color 250ms linear;
+  transition: background-color 250ms linear;
+  width: 25%;
+}
+
+#axis button.selected {
+  background-color: #0C2C56;
+  color: #fff;
+  border-color: #10707f;
+}
+
+#axis button.selected:hover {
+  color: #ffffff;
+  background-color: #0C2C56;
+  border-color: #10707f;
+  cursor: initial;
+}
+
+#axis button:hover {
+  background-color: #C4CED4;
+  color: #0C2C56;
+  border-color: #C4CED4;
 }

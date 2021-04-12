@@ -4,6 +4,22 @@ const LINE_CONST = "_line_";
 var sz = 0;
 var scatterChart;
 
+$(function() {
+  $("#axis .val").click(function() {
+    $("#axis button").removeClass("selected");
+    graphMode = $(this).text().toLowerCase();
+    console.log(graphMode + " " + graphType);
+    loadChart();
+    $(this).addClass("selected");
+  });
+
+  $(".type-dropdown").click(function() {
+    graphType = $(this).text().toLowerCase();
+    console.log(graphMode + " " + graphType);
+    loadChart();
+  });
+});
+
 $(window).resize(function() {
   var old = sz;
   var width = document.documentElement.clientWidth;
@@ -34,39 +50,64 @@ $(window).resize(function() {
 }).resize()
 
 const graphModes = {
-  PERCENT: "percent",
-  ACTUAL: "actual",
+  TOTAL: "total",
   DISTANCE: "distance",
   ELEVATION: "elevation"
 }
 
-var graphMode = graphModes.PERCENT;
+const graphTypes = {
+  PERCENT: "percent",
+  ACTUAL: "actual"
+}
+
+var graphMode = graphModes.TOTAL;
+var graphType = graphTypes.PERCENT;
 
 function avatarData(runner) {
-  switch (graphMode) {
-    case graphModes.PERCENT:
-      return [{
-        x: runner.progress.distance,
-        y: runner.progress.elevation
-      }];
+  switch (graphType) {
+    case graphTypes.PERCENT:
+      switch (graphMode) {
+        case graphModes.TOTAL:
+          return [{
+            x: runner.progress.distance,
+            y: runner.progress.elevation
+          }];
+          break;
+        case graphModes.DISTANCE:
+          return [{
+            x: dayOfChallenge - 1,
+            y: runner.progress.distance
+          }];
+          break;
+        case graphModes.ELEVATION:
+          return [{
+            x: dayOfChallenge - 1,
+            y: runner.progress.elevation
+          }];
+          break;
+      }
       break;
-    case graphModes.ACTUAL:
-      return [{
-        x: runner.actual.distance,
-        y: runner.actual.elevation
-      }];
-      break;
-    case graphModes.DISTANCE:
-      return [{
-        x: dayOfChallenge - 1,
-        y: runner.actual.distance
-      }];
-      break;
-    case graphModes.ELEVATION:
-      return [{
-        x: dayOfChallenge - 1,
-        y: runner.actual.elevation
-      }];
+    case graphTypes.ACTUAL:
+      switch (graphMode) {
+        case graphModes.TOTAL:
+          return [{
+            x: runner.actual.distance,
+            y: runner.actual.elevation
+          }];
+          break;
+        case graphModes.DISTANCE:
+          return [{
+            x: dayOfChallenge - 1,
+            y: runner.actual.distance
+          }];
+          break;
+        case graphModes.ELEVATION:
+          return [{
+            x: dayOfChallenge - 1,
+            y: runner.actual.elevation
+          }];
+          break;
+      }
       break;
   }
 }
@@ -92,26 +133,45 @@ class Point {
 
 function plotData(runner) {
   var data = []
-  data.push(new Point(0, 0))
-  switch (graphMode) {
-    case graphModes.PERCENT:
-      for (i = 0; i < dayOfChallenge; i++) {
-        data.push(new Point(runner.distances[i], runner.elevations[i]));
+  data.push(new Point(0, 0));
+
+  switch (graphType) {
+    case graphTypes.PERCENT:
+      switch (graphMode) {
+        case graphModes.TOTAL:
+          for (i = 0; i < dayOfChallenge; i++) {
+            data.push(new Point(runner.distances[i], runner.elevations[i]));
+          }
+          break;
+        case graphModes.DISTANCE:
+          for (i = 0; i < dayOfChallenge; i++) {
+            data.push(new Point(i, runner.distances[i]));
+          }
+          break;
+        case graphModes.ELEVATION:
+          for (i = 0; i < dayOfChallenge; i++) {
+            data.push(new Point(i, runner.elevations[i]));
+          }
+          break;
       }
       break;
-    case graphModes.ACTUAL:
-      for (i = 0; i < dayOfChallenge; i++) {
-        data.push(new Point(runner.distances[i] * runner.target.distance / 100, runner.elevations[i] * runner.target.elevation / 100));
-      }
-      break;
-    case graphModes.DISTANCE:
-      for (i = 0; i < dayOfChallenge; i++) {
-        data.push(new Point(i, runner.distances[i] * runner.target.distance / 100));
-      }
-      break;
-    case graphModes.ELEVATION:
-      for (i = 0; i < dayOfChallenge; i++) {
-        data.push(new Point(i, runner.elevations[i] * runner.target.elevation / 100));
+    case graphTypes.ACTUAL:
+      switch (graphMode) {
+        case graphModes.TOTAL:
+          for (i = 0; i < dayOfChallenge; i++) {
+            data.push(new Point(runner.distances[i] * runner.target.distance / 100, runner.elevations[i] * runner.target.elevation / 100));
+          }
+          break;
+        case graphModes.DISTANCE:
+          for (i = 0; i < dayOfChallenge; i++) {
+            data.push(new Point(i, runner.distances[i] * runner.target.distance / 100));
+          }
+          break;
+        case graphModes.ELEVATION:
+          for (i = 0; i < dayOfChallenge; i++) {
+            data.push(new Point(i, runner.elevations[i] * runner.target.elevation / 100));
+          }
+          break;
       }
       break;
   }
@@ -215,7 +275,7 @@ function toolTipCallbacks() {
 function makeDatasets() {
   var datasets = [];
   for (runner of logData.players) {
-    if(graphMode != graphModes.PERCENT && runner.type != "RUN") {
+    if (graphMode != graphModes.PERCENT && runner.type != "RUN") {
       continue;
     }
     datasets.push(avatarDataset(runner));
@@ -226,6 +286,9 @@ function makeDatasets() {
 }
 
 function loadChart() {
+  if (typeof(scatterChart) != "undefined") {
+    scatterChart.destroy();
+  }
   if (typeof logData === 'undefined') {
     console.log("Waiting for data");
     return;
@@ -267,33 +330,55 @@ function makeAxes(min, max, step, label) {
 }
 
 function makeScales() {
-  switch (graphMode) {
-    case graphModes.PERCENT:
-      return {
-        yAxes: makeAxes(0, roundNum(maxY + 7, 10), roundNum(maxY / 10, 5), "Elevation %"),
-          xAxes: makeAxes(0, roundNum(maxX + 7, 10), roundNum(maxX / 10, 5), "Distance %"),
+  switch (graphType) {
+    case graphTypes.PERCENT:
+      switch (graphMode) {
+        case graphModes.TOTAL:
+          return {
+            yAxes: makeAxes(0, roundNum(maxY + 7, 10), roundNum(maxY / 10, 5), "Elevation %"),
+              xAxes: makeAxes(0, roundNum(maxX + 7, 10), roundNum(maxX / 10, 5), "Distance %"),
+          }
+          break;
+        case graphModes.DISTANCE:
+          var furthest = logData.players.sort((a, b) => (b.progress.distance) - (a.progress.distance))[0].progress.distance;
+          return {
+            yAxes: makeAxes(0, roundNum(furthest + 7, 10), roundNum(furthest / 10, 10), "Distance %"),
+              xAxes: makeAxes(0, dayOfChallenge + 1, 1, "Day of April '21"),
+          }
+          break;
+        case graphModes.ELEVATION:
+          var highest = logData.players.sort((a, b) => (b.progress.elevation) - (a.progress.elevation))[0].progress.elevation;
+          return {
+            yAxes: makeAxes(0, roundNum(highest + 7, 10), roundNum(highest / 10, 5), "Elevation %"),
+              xAxes: makeAxes(0, dayOfChallenge + 1, 1, "Day of April '21"),
+          }
+          break;
       }
       break;
-    case graphModes.ACTUAL:
-      var furthest = logData.players.sort((a, b) => (b.actual.distance) - (a.actual.distance))[0].actual.distance;
-      var highest = logData.players.sort((a, b) => (b.actual.elevation) - (a.actual.elevation))[0].actual.elevation;
-      return {
-        yAxes: makeAxes(0, roundNum(highest + 7, 250), roundNum(highest / 10, 250), "Elevation ft"),
-          xAxes: makeAxes(0, roundNum(furthest + 7, 10), roundNum(furthest / 10, 5), "Distance mi"),
-      }
-      break;
-    case graphModes.DISTANCE:
-      var furthest = logData.players.sort((a, b) => (b.actual.distance) - (a.actual.distance))[0].actual.distance;
-      return {
-        yAxes: makeAxes(0, roundNum(furthest + 7, 10), roundNum(furthest / 10, 10), "Distance mi"),
-          xAxes: makeAxes(0, roundNum(dayOfChallenge, 5), 1, "Day of April '21"),
-      }
-      break;
-    case graphModes.ELEVATION:
-      var highest = logData.players.sort((a, b) => (b.actual.elevation) - (a.actual.elevation))[0].actual.elevation;
-      return {
-        yAxes: makeAxes(0, roundNum(highest + 7, 250), roundNum(highest / 10, 250), "Elevation ft"),
-          xAxes: makeAxes(0, roundNum(dayOfChallenge, 5), 1, "Day of April '21"),
+    case graphTypes.ACTUAL:
+      switch (graphMode) {
+        case graphModes.TOTAL:
+          var furthest = logData.players.sort((a, b) => (b.actual.distance) - (a.actual.distance))[0].actual.distance;
+          var highest = logData.players.sort((a, b) => (b.actual.elevation) - (a.actual.elevation))[0].actual.elevation;
+          return {
+            yAxes: makeAxes(0, roundNum(highest + 170, 250), roundNum(highest / 10, 250), "Elevation ft"),
+              xAxes: makeAxes(0, roundNum(furthest + 7, 10), roundNum(furthest / 10, 5), "Distance mi"),
+          }
+          break;
+        case graphModes.DISTANCE:
+          var furthest = logData.players.sort((a, b) => (b.actual.distance) - (a.actual.distance))[0].actual.distance;
+          return {
+            yAxes: makeAxes(0, roundNum(furthest + 7, 10), roundNum(furthest / 10, 10), "Distance mi"),
+              xAxes: makeAxes(0, dayOfChallenge + 1, 1, "Day of April '21"),
+          }
+          break;
+        case graphModes.ELEVATION:
+          var highest = logData.players.sort((a, b) => (b.actual.elevation) - (a.actual.elevation))[0].actual.elevation;
+          return {
+            yAxes: makeAxes(0, roundNum(highest + 170, 250), roundNum(highest / 10, 250), "Elevation ft"),
+              xAxes: makeAxes(0, dayOfChallenge + 1, 1, "Day of April '21"),
+          }
+          break;
       }
       break;
   }
