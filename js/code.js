@@ -112,7 +112,7 @@ function resetBars() {
 
 
 function browserCheck() {
-  if (localStorage.getItem(VERSION_COOKIE) != VERSION && localStorage.getItem(VERSION_COOKIE).substr(0, 4) != VERSION.substr(0, 4)) {
+  if (localStorage.getItem(VERSION_COOKIE) == null || (localStorage.getItem(VERSION_COOKIE) != VERSION && localStorage.getItem(VERSION_COOKIE).substr(0, 4) != VERSION.substr(0, 4))) {
     localStorage.setItem(VERSION_COOKIE, VERSION);
     $("#version-updates").show();
   }

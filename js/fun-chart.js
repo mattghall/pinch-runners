@@ -275,7 +275,7 @@ function toolTipCallbacks() {
 function makeDatasets() {
   var datasets = [];
   for (runner of logData.players) {
-    if (graphMode != graphModes.PERCENT && runner.type != "RUN") {
+    if (graphType != graphTypes.PERCENT && runner.type != "RUN") {
       continue;
     }
     datasets.push(avatarDataset(runner));
@@ -423,15 +423,20 @@ const headshots = ["crawford", "fraley", "gonzales", "haniger", "lewis", "moore"
 class LegendEntry {
   constructor(runner) {
     this.name = runner.name;
+    this.type = runner.type;
     this.icon = runner.icon;
     this.color = runner.color;
+  }
+
+  displayName() {
+    return this.name + " (" + this.type + ")";
   }
 
   makeEntry() {
     var entry = $('<div name="' + this.name + '" class="col-6 col-md-4 col-lg-12 legend-entry">')
     entry.append('<img src="img/icons/' + this.icon + '.png" />');
     entry.append('<div class="circle mx-2" style="background: ' + this.color + ';"></div>');
-    entry.append('<span>' + this.name + '</span>');
+    entry.append('<span>' + this.displayName() + '</span>');
     $(".row .legend").append(entry);
     $(entry).click(function() {
       hideDataSets(this);
