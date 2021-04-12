@@ -30,8 +30,8 @@ function addProgress(name, dist, elev) {
   var pie = $('<div class="col-4 col-md-0 d-block d-sm-none">');
   pie.append('<div class="chart-container" style="position: relative;">');
   pie.append('<canvas id="donut-' + safeName + '"></canvas>');
-  $("." + safeName).append(pie);
-  pieMe("donut-" + safeName, dist, elev);
+  // $("." + safeName).append(pie);
+  // pieMe("donut-" + safeName, dist, elev);
 }
 
 function makeSafeName(name) {
