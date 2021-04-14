@@ -27,8 +27,8 @@ function parseCsv(body) {
       elevation: team.progress.elev,
     },
     progress: {
-      distance: (team.progress.dist / team.target.dist * 100).toFixed(1),
-      elevation: (team.progress.elev / team.target.elev * 100).toFixed(1),
+      distance: (team.progress.dist / team.target.dist * 100).toFixed(1) || 0,
+      elevation: (team.progress.elev / team.target.elev * 100).toFixed(1) || 0,
     },
     icon: "paxton"
   }
@@ -48,8 +48,8 @@ class Player {
     var targetDist = parseFloat(line1[3]) || 100;
     var targetElev = parseFloat(line2[3]) || 10000;
 
-    var distActual = parseFloat((dist * targetDist / 100).toFixed(1));
-    var elevActual = parseFloat((elev * targetElev / 100).toFixed(1));
+    var distActual = parseFloat((dist * targetDist / 100).toFixed(1)) || 0;
+    var elevActual = parseFloat((elev * targetElev / 100).toFixed(1)) || 0;
 
     team.progress.dist += distActual;
     team.progress.elev += elevActual;
@@ -80,13 +80,13 @@ class Player {
     var totalElev = 0;
 
     for (var day = 0; day < 30; day++) {
-      var d = parseFloat(line1[6 + day] || 0);
+      var d = parseFloat(line1[6 + day]) || 0;
       totalDist += d;
-      var daysPercent = ((totalDist / targetDist) * 100).toFixed(1);
+      var daysPercent = ((totalDist / targetDist) * 100).toFixed(1) || 0;
       dist.push(daysPercent);
-      var e = parseFloat(line2[6 + day] || 0);
+      var e = parseFloat(line2[6 + day]) || 0;
       totalElev += e;
-      daysPercent = ((totalElev / targetElev) * 100).toFixed(1);
+      daysPercent = ((totalElev / targetElev) * 100).toFixed(1) || 0;
       elev.push(daysPercent);
     }
     this.distances = dist;
