@@ -1,4 +1,4 @@
-const VERSION = "v1.5.3";
+const VERSION = "v1.5.4";
 const CLUB_ID = 911459;
 
 const url = "https://8kmzt1szjl.execute-api.us-west-2.amazonaws.com/pinch";

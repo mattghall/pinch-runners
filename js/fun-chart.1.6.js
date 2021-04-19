@@ -310,9 +310,47 @@ function loadChart() {
       },
       maintainAspectRatio: false,
       scales: makeScales(),
-      legend: legend
+      legend: legend,
+      annotation: makeFinishLine(),
     }
+
   });
+}
+
+function makeFinishLine() {
+  if (graphType == graphTypes.PERCENT) {
+    switch(graphMode) {
+      case graphModes.TOTAL:
+        return {
+          annotations: [makeBox(100,200,100,200), makeBox(100,100.5,0,100),makeBox(0,100,100,100.5)]
+        }
+        break;
+        case graphModes.DISTANCE:
+        return {
+          annotations: [makeBox(0,200,100,200)]
+        }
+        break;
+        case graphModes.ELEVATION:
+        return {
+          annotations: [makeBox(0,200,100,200)]
+        }
+        break;
+  }
+}
+}
+
+function makeBox(minX, maxX, minY, maxY) {
+  return {
+    type: "box",
+    xScaleID: 'x-axis-1',
+    yScaleID: 'y-axis-1',
+    xMin: minX,
+    xMax: maxX,
+    yMin: minY,
+    yMax: maxY,
+    backgroundColor: 'rgba(124, 252, 0, 0.25)',
+    borderWidth: 0
+  }
 }
 
 function makeAxes(min, max, step, label) {
@@ -429,7 +467,7 @@ class LegendEntry {
   }
 
   displayName() {
-    if(this.type == "RUN") {
+    if (this.type == "RUN") {
       return this.name;
     }
     return this.name + " (" + this.type + ")";
