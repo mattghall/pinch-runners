@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico" />
+  <title>Pinch Runners</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../dep/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.2.0.0.css">
+
+  <script src="../dep/popper.min.js"></script>
+  <script src="../dep/jquery-3.5.1.min.js"></script>
+  <script src="../dep/bootstrap.min.js"></script>
+  <script src="../dep/Chart.min.js"></script>
+  <script src="../dep/chartjs-plugin-annotation.min.js"></script>
+  <script src="../js/code.js"></script>
+  <script src="js/progress-bars.js"></script>
+  <script src="js/fun-chart.2.0.0.js"></script>
+  <script src="js/code.2.0.0.js"></script>
+  <script src="../dep/feather.min.js"></script>
+
+</head>
+
+<body>
+  <div class="not-footer p-3 px-sm-5">
+    <div class="row">
+      <div class="col-md-5">
+        <img class="rounded mx-auto d-block" alt="Evergreen Challenge" src="img/rainier.png">
+      </div>
+      <div class="col-md-7">
+        <div class="row" style="height: 100%;">
+          <div class="col-12 text-center text-md-left">
+            <h2>April Challenge</h2>
+          </div>
+          <div class="col-12 text-center text-md-left">
+            <p>Pick your mountain and track your progress throughout the month! Run, walk, climb, crawl, and kayak your way to the top!
+            Is biking more your fancy? Select 'bike' in the spreadsheet for special bike only features.</p>
+          </div>
+          <div class="col-6 col-md-12 text-center text-md-left">
+            <a href="https://docs.google.com/spreadsheets/d/1tU3qY3sGw-D4hWGDx-eSQy2-Mn9rXPO55iXp9aITcwQ/edit?usp=sharing"><i data-feather="edit"></i><span>Enter Data</span></a>
+          </div>
+          <div class="col-6 col-md-12 text-center text-md-left">
+            <a id="refresh-button" href="#" class="disabled" onclick="getData(true);"><i data-feather="refresh-cw"></i><span>Refresh Data</span></a>
+          </div>
+          <div class="col-12 text-center text-md-left">
+            <div id="version-updates">
+              <!-- <hr>
+              <h4>NEW FEATURE ALERT!</h4>
+              <p>The graph now has multple axis to choose from! Try them all to find your favorite.
+                Happy Running, Biking, and Kayaking!
+              </p> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+
+    <div id="spinner" class="text-center">
+      <div class="spinner-grow text-info" role="status" style="height: 15rem; width: 15rem;">
+        <span class="d-none">Loading...</span>
+      </div>
+    </div>
+
+    <div id="notSpinner">
+      <div class="row">
+        <div class="col-12">
+          <h3>Climb your Mountain!</h3>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12 col-lg-9 px-0 px-sm-5">
+          <div class="chart-container" style="position: relative; height:80vh;">
+            <canvas id="myChart" width="100" height="100"></canvas>
+          </div>
+          <div class="col-12">
+            <div id="axis" class="btn-group" role="group" aria-label="Axis" style="width: 100%">
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                </button>
+                <div class="dropdown-menu ">
+                  <a class="dropdown-item type-dropdown" href="#">Percent</a>
+                  <a class="dropdown-item type-dropdown" href="#">Actual</a>
+                </div>
+              </div>
+
+              <button type="button" class="btn val selected">Total</button>
+              <button type="button" class="btn val">Distance</button>
+              <button type="button" class="btn val">Elevation</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-3">
+          <div class="row legend" style="height: 90%;">
+          </div>
+        </div>
+        <div class="container bars my-3"> </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <footer class="bg-dark text-center text-white">
+    <div class="container p-4 pb-0">
+      <section>
+        <a class="btn btn-outline-light btn-floating m-1" href="https://twitter.com/mattghall" role="button"><i data-feather="twitter"></i></a>
+        <a class="btn btn-outline-light btn-floating m-1" href="https://instagram.com/mattghall" role="button"><i data-feather="instagram"></i></a>
+        <a class="btn btn-outline-light btn-floating m-1" href="https://linkedin.com/in/mattghall/" role="button"><i data-feather="linkedin"></i></a>
+        <a class="btn btn-outline-light btn-floating m-1" href="https://github.com/mattghall" role="button"><i data-feather="github"></i></a>
+      </section>
+    </div>
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+      pinch-runners.mattghall.com - <span class="version-span">unknown version</span>
+    </div>
+  </footer>
+</body>
+
+</html>
